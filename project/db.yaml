@@ -1,0 +1,41 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "sreedb1"
+  namespace: "default"
+  labels:
+    app: "sreedb1"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "sreedb1"
+  template:
+    metadata:
+      labels:
+        app: "sreedb1"
+    spec:
+      containers:
+      - name: "sreedb1-sha256-1"
+        image: "gcr.io/charged-ground-326209/github.com/bhavyasreechereddy/sreedb1@sha256:92e69ccf52385c34abf371aefb0ae10be2ec890c455699a44c3bda7fea90e3f8"
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "sreedb1-hpa-bfwc"
+  namespace: "default"
+  labels:
+    app: "sreedb1"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "sreedb1"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80
